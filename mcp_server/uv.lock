@@ -252,6 +252,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "mcp" },
     { name = "psycopg", extra = ["binary"] },
+    { name = "python-dotenv" },
     { name = "requests" },
     { name = "sqlparse" },
 ]
@@ -260,6 +261,7 @@ dependencies = [
 requires-dist = [
     { name = "mcp", specifier = ">=1.2.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.1" },
+    { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "requests", specifier = ">=2.32" },
     { name = "sqlparse", specifier = ">=0.5" },
 ]

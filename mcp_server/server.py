@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from dotenv import load_dotenv
 import re
 import json
 from typing import Any, Dict, List, Optional
@@ -12,6 +13,8 @@ from psycopg.rows import dict_row
 from mcp.server.fastmcp import FastMCP
 
 import requests
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 # Create the server
 app = FastMCP("mcp-sql-analyst")
@@ -282,13 +285,17 @@ def generate_sql(natural_language_query: str) -> Dict[str, Any]:
                     "prompt": f"SYSTEM:\n{system_prompt}\n\nUSER:\n{json.dumps(user_prompt)}\n",
                     "stream": False,
                 },
-                timeout=60,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            candidate = (data.get("response") or "").strip()
-            sql_text = candidate
-    except Exception:
+            timeout=120,
+        )
+        if not resp.ok:
+            print("Ollama HTTP error:", resp.status_code, resp.text)
+        resp.raise_for_status()
+        data = resp.json()
+        print("ollama response:", data)
+        candidate = (data.get("response") or "").strip()
+        sql_text = candidate
+    except Exception as e:
+        print("Ollama call failed:", repr(e))
         sql_text = None
 
     # Fallback to OpenAI if configured
